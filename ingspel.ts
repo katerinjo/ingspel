@@ -42,7 +42,60 @@ const vowelRules = {
     "aw": {"initial": "ou", "init-checked": "ow", "medial": "ow", "mid-checked": "ow", "final": "ow", "free": true}
 };
 
-function spell(xsampa) {
+const substitutions = [
+    ["k", "a"], ["c", "a"],
+    ["k", "o"], ["c", "o"],
+    ["k", "w", "a"], ["qu", "a"],
+    ["k", "w", "e"], ["qu", "e"],
+    ["k", "w", "i"], ["qu", "i"],
+    ["k", "w", "o"], ["qu", "o"],
+    ["a", "s", "i"], ["a", "c", "i"],
+    ["a", "s", "e"], ["a", "c", "e"],
+    ["e", "s", "i"], ["e", "c", "i"],
+    ["e", "s", "e"], ["e", "c", "e"],
+    ["i", "s", "i"], ["i", "c", "i"],
+    ["i", "s", "e"], ["i", "c", "e"],
+    ["o", "s", "i"], ["o", "c", "i"],
+    ["o", "s", "e"], ["o", "c", "e"],
+    ["u", "s", "i"], ["u", "c", "i"],
+    ["u", "s", "e"], ["u", "c", "e"],
+    ["ee", "s", "i"], ["ee", "c", "i"],
+    ["ee", "s", "e"], ["ee", "c", "e"],
+    ["oo", "s", "i"], ["oo", "c", "i"],
+    ["oo", "s", "e"], ["oo", "c", "e"],
+    ["oa", "s", "i"], ["oa", "c", "i"],
+    ["oa", "s", "e"], ["oa", "c", "e"],
+    ["au", "s", "i"], ["au", "c", "i"],
+    ["au", "s", "e"], ["au", "c", "e"],
+    ["aw", "s", "i"], ["aw", "c", "i"],
+    ["aw", "s", "e"], ["aw", "c", "e"],
+    ["ow", "s", "i"], ["ow", "c", "i"],
+    ["ow", "s", "e"], ["ow", "c", "e"],
+    ["ou", "s", "i"], ["ou", "c", "i"],
+    ["ou", "s", "e"], ["ou", "c", "e"],
+    ["oi", "s", "i"], ["oi", "c", "i"],
+    ["oi", "s", "e"], ["oi", "c", "e"],
+    ["ei", "s", "i"], ["ei", "c", "i"],
+    ["ei", "s", "e"], ["ei", "c", "e"],
+    ["g", "i"], ["gh", "i"],
+    ["g", "e"], ["gh", "e"],
+    ["jj", "e"], ["dg", "e"],
+    ["jj"], ["j"]
+];
+
+function parseXsampa(xsampa: string) : string[] {
+    return xsampa.split("");
+}
+
+function getChunks(phonemes: string[]) : string[][] {
+    return [["nothing", "here"], ["same", "over" "here"]];
+}
+
+function getChecked(consonantChunks: string[], vowelChunks: string[]) : boolean[] {
+    return [false, false, false];
+}
+
+function spell(xsampa: string) : string {
     const phonemic = parseXsampa(xsampa);
     const [consonantChunks, vowelChunks] = getChunks(phonemic);
     const checkSeq = getChecked(consonantChunks, vowelChunks);
