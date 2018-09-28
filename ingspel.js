@@ -44,10 +44,11 @@ const vowelRules = {
 
 function spell(xsampa) {
     const phonemic = parseXsampa(xsampa);
-    const [consonants, vowels] = getChunks(phonemic);
-    const checkSeq = getChecked(vowels, consonants);
-    const vowelGraphemes = getVowelGraphemes(vowels, consonants);
-    const consonantGraphemes = getConsonantGraphemes(consonants, checkSeq);
-    const rough = getSpelling(consonantGraphemes,vowelGraphemes);
-    return tidy(rough);
+    const [consonantChunks, vowelChunks] = getChunks(phonemic);
+    const checkSeq = getChecked(consonantChunks, vowelChunks);
+    const vowelUnits = getVowelUnits(vowelChunks, checkSeq);
+    const consonantUnits = getConsonantUnits(consonantChunks, checkSeq);
+    const rawUnits = merge(consonantUnits, vowelUnits);
+    const prettyUnits = transform(rawUnits);
+    return prettyUnits.join()
 }
