@@ -35,7 +35,7 @@ const vowelRules = {
     "@": {"initial": "a", "init-checked": "u", "medial": "u", "mid-checked": "u", "final": "a", "free": false},
     "o": {"initial": "o", "init-checked": "oa", "medial": "o", "mid-checked": "oa", "final": "o", "free": true},
     "{": {"initial": "a", "init-checked": "a", "medial": "a", "mid-checked": "a", "final": "eah", "free": false},
-    "a": {"initial": "ough", "init-checked": "o", "medial": "aw", "mid-checked": "o", "final": "ah", "free": false},
+    "a": {"initial": "au", "init-checked": "o", "medial": "aw", "mid-checked": "o", "final": "ah", "free": false},
     "ej": {"initial": "a", "init-checked": "ei", "medial": "a", "mid-checked": "ei", "final": "ei", "free": true},
     "aj": {"initial": "i", "init-checked": "ai", "medial": "i", "mid-checked": "ai", "final": "ai", "free": true},
     "oj": {"initial": "oi", "init-checked": "oi", "medial": "oi", "mid-checked": "oi", "final": "oy", "free": true},
