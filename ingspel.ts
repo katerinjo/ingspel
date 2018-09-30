@@ -83,25 +83,47 @@ const substitutions = [
     ["jj"], ["j"]
 ];
 
+// take a single XSAMPA string and convert it into a list of XSAMPA sounds to make for easier processing
 function parseXsampa(xsampa: string) : string[] {
     return xsampa.split("");
 }
 
-function getChunks(phonemes: string[]) : string[][] {
-    return [["nothing", "here"], ["same", "over" "here"]];
+// group recognized sequences of sounds into single sounds
+// if the word starts with a vowel sound, put an empty string at the beginning of the consonant sequence
+function groupSounds(phonemes: string[]) : string[] {
+    return ["nothing", "here"];
 }
 
-function getChecked(consonantChunks: string[], vowelChunks: string[]) : boolean[] {
+// groups sounds into lists where each list is a sequence of sounds either checked or free
+// adjacent vowels become separate lists, while adjacent consonants stack into the same list
+// eg ["t", "a", "k", "o", "[", "s", "t", "r", "o"]
+// -> [["", "t"], ["a", "k"], ["o"] ["{", "s", "t", "r"], ["o"]]
+function getChunks(sounds: string[]) : string[][] {
+    return [["", "b"], ["a", "t"], ["e"]];
+}
+
+// based on vowels' preferences and consonant vetos,
+// determine whether each vowel should be checked (true) or free (false)
+function getChecked(chunks: string[][]) : boolean[] {
     return [false, false, false];
+}
+
+// create a list of graphemes based on the sound sequences and 
+function getUnits(chunks: string[][], checkSeq: boolean[]) : string[] {
+    return ["nothing", "here"];
+}
+
+// for spelling rules unrelated to the freedom of vowels, apply lots of substitutions
+function transform(units: string[]) : string[] {
+    return ["nothing", "here"];
 }
 
 function spell(xsampa: string) : string {
     const phonemic = parseXsampa(xsampa);
-    const [consonantChunks, vowelChunks] = getChunks(phonemic);
-    const checkSeq = getChecked(consonantChunks, vowelChunks);
-    const vowelUnits = getVowelUnits(vowelChunks, checkSeq);
-    const consonantUnits = getConsonantUnits(consonantChunks, checkSeq);
-    const rawUnits = merge(consonantUnits, vowelUnits);
-    const prettyUnits = transform(rawUnits);
+    const sounds = groupSounds(phonemic);
+    const chunks = getChunks(sounds);
+    const checkSeq = getChecked(chunks);
+    const units = getUnits(chunks, checkSeq);
+    const prettyUnits = transform(units);
     return prettyUnits.join()
 }
