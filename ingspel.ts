@@ -80,42 +80,78 @@ const substitutions = [
     ["g", "i"], ["gh", "i"],
     ["g", "e"], ["gh", "e"],
     ["jj", "e"], ["dg", "e"],
-    ["jj"], ["j"]
+    ["jj"], ["j"],
+    ["k", "s"], ["x"]
 ];
 
 // take a single XSAMPA string and convert it into a list of XSAMPA sounds to make for easier processing
 function parseXsampa(xsampa: string) : string[] {
-    return xsampa.split("");
+    return ["t", "S", "e", "j", "n", "d", "Z"];
 }
 
 // group recognized sequences of sounds into single sounds
-// if the word starts with a vowel sound, put an empty string at the beginning of the consonant sequence
 function groupSounds(phonemes: string[]) : string[] {
-    return ["nothing", "here"];
+    return ["tS", "ej", "n", "dZ"];
 }
 
 // groups sounds into lists where each list is a sequence of sounds either checked or free
 // adjacent vowels become separate lists, while adjacent consonants stack into the same list
-// eg ["t", "a", "k", "o", "[", "s", "t", "r", "o"]
+// eg ["t", "a", "k", "o", "{", "s", "t", "r", "o"]
 // -> [["", "t"], ["a", "k"], ["o"] ["{", "s", "t", "r"], ["o"]]
 function getChunks(sounds: string[]) : string[][] {
-    return [["", "b"], ["a", "t"], ["e"]];
+    return [["", "b"], ["ej", "t"]];
 }
 
 // based on vowels' preferences and consonant vetos,
 // determine whether each vowel should be checked (true) or free (false)
 function getChecked(chunks: string[][]) : boolean[] {
-    return [false, false, false];
+    return [true];
 }
 
-// create a list of graphemes based on the sound sequences and 
+// create a list of graphemes based on the sound sequences, their position, and their checked status
 function getUnits(chunks: string[][], checkSeq: boolean[]) : string[] {
-    return ["nothing", "here"];
+    return ["k", "w", "a", "l", "i", "a"]
 }
+
+function arrEqs(a: string[], b: string[]): boolean {
+    if (a.length === 0) {
+        if (b.length === 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        if (b.length === 0) {
+            return false;
+        } else {
+            if (a[0] === b[0]) {
+                return arrEqs(a.slice(1), b.slice(1));
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
+function replaceSequence(pattern: string[], insertion: string[], old: string[]) : string[] {
+    let steps = pattern.length
+    let current = old.slice();
+    for (let i = 0; i < current.length - pattern.length; i++) {
+        if (arrEqs(current.slice(i, i + steps), pattern)) {
+            current.splice(i, steps, ...insertion);
+        }
+    }
+    return current;
+}
+
 
 // for spelling rules unrelated to the freedom of vowels, apply lots of substitutions
-function transform(units: string[]) : string[] {
-    return ["nothing", "here"];
+function transform(raw: string[]) : string[] {
+    let current = raw.slice();
+    for (let i = 0; i < substitutions.length; i += 2) {
+        current = replaceSequence(substitutions[i], substitutions[i + 1], current);
+    }
+    return current;
 }
 
 function spell(xsampa: string) : string {
@@ -125,5 +161,7 @@ function spell(xsampa: string) : string {
     const checkSeq = getChecked(chunks);
     const units = getUnits(chunks, checkSeq);
     const prettyUnits = transform(units);
-    return prettyUnits.join()
+    return prettyUnits.join("");
 }
+
+console.log(spell("S@b{N@r{N"));
