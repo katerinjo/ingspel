@@ -24,6 +24,7 @@ const consonantRules = {
     "tS": {"initial": "ch", "short": "ch", "long": "ch", "final": "ch"},
     "dZ": {"initial": "j", "short": "j", "long": "jj", "final": "dge"},
     "Ng": {"initial": "ng", "long": "ng", "final": "ng"},
+    "nd": {"initial": "nd", "short": "nd", "long": "nd", "final": "nd"}
 };
 
 const vowelRules = {
@@ -96,21 +97,75 @@ function groupSounds(phonemes: string[]) : string[] {
 
 // groups sounds into lists where each list is a sequence of sounds either checked or free
 // adjacent vowels become separate lists, while adjacent consonants stack into the same list
-// eg ["t", "a", "k", "o", "{", "s", "t", "r", "o"]
-// -> [["", "t"], ["a", "k"], ["o"] ["{", "s", "t", "r"], ["o"]]
-function getChunks(sounds: string[]) : string[][] {
-    return [["", "b"], ["ej", "t"]];
+// eg ["t", "s", "a", "k", "o", "{", "s", "t", "r", "o"]
+// -> {beginning: ["t", "s"], middle: [["a", "k"], ["o"] ["{", "s", "t", "r"]], end: ["o"]}
+function getChunks(sounds: string[]) {
+    return {
+        beginning: ["b", "l"],
+        middle: [["{", "N"], ["@", "r"]],
+        ending: ["{", "N"]
+    };
 }
 
 // based on vowels' preferences and consonant vetos,
 // determine whether each vowel should be checked (true) or free (false)
-function getChecked(chunks: string[][]) : boolean[] {
-    return [true];
+function getChecked(chunks: object) : boolean[] {
+    return [false, true, true];
+}
+
+function getFirstUnits(chunk: string[]): string[] {
+    return chunk.map(consonant => consonantRules[consonant]["initial"]);
+}
+
+function getMiddleUnits(middle: string[][], checkSeq: boolean[]): string[] {
+    let outList = [];
+    for (let i = 0; i < middle.length; i++) {
+        if (checkSeq[i]) {
+            outList.push(vowelRules[middle[i][0]]["mid-checked"]);
+            outList.push(...middle[i].slice(1).map(consonant => consonantRules[consonant]["long"]));
+        } else {
+            outList.push(vowelRules[middle[i][0]]["medial"]);
+            outList.push(...middle[i].slice(1).map(consonant => consonantRules[consonant]["short"]));
+        }
+    }
+    return outList;
+}
+
+function getLastUnits(chunk: string[], checked: boolean): string[] {
+    console.log(chunk);
+    if (chunk.length === 1) {
+        return [vowelRules[chunk[0]]["final"]];
+    } else {
+        if (checked) {
+            return [
+                vowelRules[chunk[0]]["mid-checked"],
+                ...chunk.slice(1).map(consonant => consonantRules[consonant]["final"])
+            ];
+        } else {
+            return [
+                vowelRules[chunk[0]]["medial"],
+                ...chunk.slice(1).map(consonant => consonantRules[consonant]["short"]),
+                "e"
+            ];
+        }
+    }
 }
 
 // create a list of graphemes based on the sound sequences, their position, and their checked status
-function getUnits(chunks: string[][], checkSeq: boolean[]) : string[] {
-    return ["k", "w", "a", "l", "i", "a"]
+function getUnits(chunks, checkSeq: boolean[]) : string[] {
+    let outList = [];
+    let {beginning, middle, ending} = chunks;
+    if (beginning != null) {
+        outList.push(...getFirstUnits(beginning));
+    }
+    if (middle != null) {
+        outList.push(...getMiddleUnits(middle, checkSeq));
+    }
+    console.log(ending);
+    if (ending != null) {
+        outList.push(...getLastUnits(ending, checkSeq[checkSeq.length - 1]));
+    }
+    return outList;
 }
 
 function arrEqs(a: string[], b: string[]): boolean {
