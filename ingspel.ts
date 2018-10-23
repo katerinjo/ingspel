@@ -95,16 +95,38 @@ function groupSounds(phonemes: string[]) : string[] {
     return ["tS", "ej", "n", "dZ"];
 }
 
+function findAllVowels(sounds: string[]): number[] {
+    let outList = [];
+    for (let i = 0; i < sounds.length; i++) {
+        if (sounds[i] in vowelRules) {
+            outList.push(i);
+        }
+    }
+    return outList;
+}
+
 // groups sounds into lists where each list is a sequence of sounds either checked or free
 // adjacent vowels become separate lists, while adjacent consonants stack into the same list
 // eg ["t", "s", "a", "k", "o", "{", "s", "t", "r", "o"]
 // -> {beginning: ["t", "s"], middle: [["a", "k"], ["o"] ["{", "s", "t", "r"]], end: ["o"]}
 function getChunks(sounds: string[]) {
-    return {
-        beginning: ["b", "l"],
-        middle: [["{", "N"], ["@", "r"]],
-        ending: ["{", "N"]
-    };
+    const ixs = findAllVowels(sounds);
+    if (ixs.length === 0) {
+        return {beginning: sounds};
+    } else if (ixs.length === 1) {
+        return {
+            beginning: sounds.slice(0, ixs[0]),
+            ending: sounds.slice(ixs[0])
+        }
+    } else {
+        const beginning = sounds.slice(0, ixs[0]);
+        let middle = [];
+        for (let i = 0; i < ixs.length - 2; i++) {
+            middle.push(sounds.slice(ixs[i], ixs[i + 1]));
+        }
+        const ending = sounds.slice(ixs[ixs.length - 1]);
+        return {beginning, middle, ending};
+    }
 }
 
 // based on vowels' preferences and consonant vetos,
