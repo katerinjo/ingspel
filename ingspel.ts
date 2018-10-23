@@ -87,12 +87,12 @@ const substitutions = [
 
 // take a single XSAMPA string and convert it into a list of XSAMPA sounds to make for easier processing
 function parseXsampa(xsampa: string) : string[] {
-    return ["t", "S", "e", "j", "n", "d", "Z"];
+    return xsampa.split(" ");
 }
 
 // group recognized sequences of sounds into single sounds
 function groupSounds(phonemes: string[]) : string[] {
-    return ["tS", "ej", "n", "dZ"];
+    return ["b", "{", "n", "dZ", "o"];
 }
 
 function findAllVowels(sounds: string[]): number[] {
@@ -121,7 +121,7 @@ function getChunks(sounds: string[]) {
     } else {
         const beginning = sounds.slice(0, ixs[0]);
         let middle = [];
-        for (let i = 0; i < ixs.length - 2; i++) {
+        for (let i = 0; i < ixs.length - 1; i++) {
             middle.push(sounds.slice(ixs[i], ixs[i + 1]));
         }
         const ending = sounds.slice(ixs[ixs.length - 1]);
@@ -258,4 +258,11 @@ function spell(xsampa: string) : string {
     return prettyUnits.join("");
 }
 
-console.log(spell("S@b{N@r{N"));
+console.log(spell("S @ b { N @ r { N"));
+console.log(spell("I N s p e l"));
+console.log(spell("p r I n t"));
+console.log(spell("f i r f U l"));
+console.log(spell("p r @ v a j d"));
+console.log(spell("e s p e r a n t o"));
+console.log(spell("d { { { { N"));
+console.log(spell("D I s S { l m e n o"));
