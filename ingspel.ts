@@ -28,19 +28,19 @@ const consonantRules = {
 };
 
 const vowelRules = {
-    "i": {"initial": "e", "init-checked": "ee", "medial": "e", "mid-checked": "ee", "final": "ee", "free": true},
-    "I": {"initial": "i", "init-checked": "i", "medial": "i", "mid-checked": "i", "final": "ih", "free": false},
-    "U": {"initial": "oo", "init-checked": "oo", "medial": "oo", "mid-checked": "oo", "final": "oo", "free": false},
-    "u": {"initial": "oo", "init-checked": "oo", "medial": "u", "mid-checked": "oo", "final": "oo", "free": true},
-    "e": {"initial": "e", "init-checked": "e", "medial": "e", "mid-checked": "e", "final": "eh", "free": false},
-    "@": {"initial": "a", "init-checked": "u", "medial": "u", "mid-checked": "u", "final": "a", "free": false},
-    "o": {"initial": "o", "init-checked": "oa", "medial": "o", "mid-checked": "oa", "final": "o", "free": true},
-    "{": {"initial": "a", "init-checked": "a", "medial": "a", "mid-checked": "a", "final": "eah", "free": false},
-    "a": {"initial": "au", "init-checked": "o", "medial": "aw", "mid-checked": "o", "final": "ah", "free": false},
-    "ej": {"initial": "a", "init-checked": "ei", "medial": "a", "mid-checked": "ei", "final": "ei", "free": true},
-    "aj": {"initial": "i", "init-checked": "ai", "medial": "i", "mid-checked": "ai", "final": "ai", "free": true},
-    "oj": {"initial": "oi", "init-checked": "oi", "medial": "oi", "mid-checked": "oi", "final": "oy", "free": true},
-    "aw": {"initial": "ou", "init-checked": "ow", "medial": "ow", "mid-checked": "ow", "final": "ow", "free": true}
+    "i": {"initial": "e", "init-checked": "ee", "medial": "e", "mid-checked": "ee", "final": "ee", "checked": false},
+    "I": {"initial": "i", "init-checked": "i", "medial": "i", "mid-checked": "i", "final": "ih", "checked": false},
+    "U": {"initial": "oo", "init-checked": "oo", "medial": "oo", "mid-checked": "oo", "final": "oo", "checked": true},
+    "u": {"initial": "oo", "init-checked": "oo", "medial": "u", "mid-checked": "oo", "final": "oo", "checked": false},
+    "e": {"initial": "e", "init-checked": "e", "medial": "e", "mid-checked": "e", "final": "eh", "checked": true},
+    "@": {"initial": "a", "init-checked": "u", "medial": "u", "mid-checked": "u", "final": "a", "checked": true},
+    "o": {"initial": "o", "init-checked": "oa", "medial": "o", "mid-checked": "oa", "final": "o", "checked": false},
+    "{": {"initial": "a", "init-checked": "a", "medial": "a", "mid-checked": "a", "final": "eah", "checked": true},
+    "a": {"initial": "au", "init-checked": "o", "medial": "aw", "mid-checked": "o", "final": "ah", "checked": true},
+    "ej": {"initial": "a", "init-checked": "ei", "medial": "a", "mid-checked": "ei", "final": "ei", "checked": false},
+    "aj": {"initial": "i", "init-checked": "ai", "medial": "i", "mid-checked": "ai", "final": "ai", "checked": false},
+    "oj": {"initial": "oi", "init-checked": "oi", "medial": "oi", "mid-checked": "oi", "final": "oy", "checked": false},
+    "aw": {"initial": "ou", "init-checked": "ow", "medial": "ow", "mid-checked": "ow", "final": "ow", "checked": false}
 };
 
 const substitutions = [
@@ -109,8 +109,27 @@ function getChunks(sounds: string[]) {
 
 // based on vowels' preferences and consonant vetos,
 // determine whether each vowel should be checked (true) or free (false)
-function getChecked(chunks: object) : boolean[] {
-    return [false, true, true];
+function getChecked(chunks) : boolean[] {
+    let outList = [];
+    if (chunks.middle != null) {
+        for (let chunk of chunks.middle) {
+            if (chunk.length > 2) {
+                outList.push(true);
+            } else {
+                let wantsChecked = vowelRules[chunk[0]]["checked"];
+                let preferType = wantsChecked ? "long" : "short";
+                if (consonantRules[chunk[1]][preferType] != null) {
+                    outList.push(wantsChecked);
+                } else {
+                    outList.push(!wantsChecked);
+                }
+            }
+        }
+    }
+    if (chunks.end != null) {
+        outList.push(chunks.end.length > 1);
+    }
+    return outList;
 }
 
 function getFirstUnits(chunk: string[]): string[] {
@@ -132,7 +151,6 @@ function getMiddleUnits(middle: string[][], checkSeq: boolean[]): string[] {
 }
 
 function getLastUnits(chunk: string[], checked: boolean): string[] {
-    console.log(chunk);
     if (chunk.length === 1) {
         return [vowelRules[chunk[0]]["final"]];
     } else {
@@ -161,7 +179,6 @@ function getUnits(chunks, checkSeq: boolean[]) : string[] {
     if (middle != null) {
         outList.push(...getMiddleUnits(middle, checkSeq));
     }
-    console.log(ending);
     if (ending != null) {
         outList.push(...getLastUnits(ending, checkSeq[checkSeq.length - 1]));
     }
