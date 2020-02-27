@@ -146,6 +146,8 @@ function getChecked(chunks) : boolean[] {
         for (let chunk of chunks.middle) {
             if (chunk.length > 2) {
                 outList.push(true);
+            } else if (chunk.length === 1) {
+                outList.push(false);
             } else {
                 let wantsChecked = vowelRules[chunk[0]]["checked"];
                 let preferType = wantsChecked ? "long" : "short";
@@ -157,8 +159,8 @@ function getChecked(chunks) : boolean[] {
             }
         }
     }
-    if (chunks.end != null) {
-        outList.push(chunks.end.length > 1);
+    if (chunks.ending != null) {
+        outList.push(chunks.ending.length > 1);
     }
     return outList;
 }
@@ -170,9 +172,15 @@ function getFirstUnits(chunk: string[]): string[] {
 function getMiddleUnits(middle: string[][], checkSeq: boolean[]): string[] {
     let outList = [];
     for (let i = 0; i < middle.length; i++) {
-        if (middle[i].length === 2 && checkSeq[i]) {
+        if (checkSeq[i]) {
             outList.push(vowelRules[middle[i][0]]["mid-checked"]);
-            outList.push(...middle[i].slice(1).map(consonant => consonantRules[consonant]["long"]));
+            const consonants = middle[i].slice(1);
+            if (consonants.length === 1) {
+                outList.push(consonantRules[consonants[0]]["long"]);
+            } else {
+                outList.push(
+                    ...consonants.map(c => consonantRules[c]["short"]));
+            }
         } else {
             outList.push(vowelRules[middle[i][0]]["medial"]);
             outList.push(...middle[i].slice(1).map(consonant => consonantRules[consonant]["short"]));
@@ -260,8 +268,11 @@ function transform(raw: string[]) : string[] {
 function spell(xsampa: string) : string {
     const sounds = parseXsampa(xsampa);
     const chunks = getChunks(sounds);
+    console.log(chunks)
     const checkSeq = getChecked(chunks);
+    console.log(checkSeq)
     const units = getUnits(chunks, checkSeq);
+    console.log(units)
     const prettyUnits = transform(units);
     return prettyUnits.join("");
 }
