@@ -268,11 +268,8 @@ function transform(raw: string[]) : string[] {
 function spell(xsampa: string) : string {
     const sounds = parseXsampa(xsampa);
     const chunks = getChunks(sounds);
-    console.log(chunks)
     const checkSeq = getChecked(chunks);
-    console.log(checkSeq)
     const units = getUnits(chunks, checkSeq);
-    console.log(units)
     const prettyUnits = transform(units);
     return prettyUnits.join("");
 }
