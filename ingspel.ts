@@ -87,12 +87,21 @@ const substitutions = [
 
 // take a single XSAMPA string and convert it into a list of XSAMPA sounds to make for easier processing
 function parseXsampa(xsampa: string) : string[] {
-    return xsampa.split(" ");
-}
-
-// group recognized sequences of sounds into single sounds
-function groupSounds(phonemes: string[]) : string[] {
-    return ["b", "{", "n", "dZ", "o"];
+    let outList = [];
+    let ix = 0;
+    while (ix < xsampa.length) {
+        const longSymbol = xsampa.slice(ix, ix + 2);
+        if (longSymbol in consonantRules || longSymbol in vowelRules) {
+            outList.push(longSymbol);
+            ix += 2;
+        } else if (xsampa[ix] in consonantRules || xsampa[ix] in vowelRules) {
+            outList.push(xsampa[ix]);
+            ix++;
+        } else { // ignore unrecognized symbols
+            ix++;
+        }
+    }
+    return outList;
 }
 
 function findAllVowels(sounds: string[]): number[] {
@@ -249,8 +258,7 @@ function transform(raw: string[]) : string[] {
 }
 
 function spell(xsampa: string) : string {
-    const phonemic = parseXsampa(xsampa);
-    const sounds = groupSounds(phonemic);
+    const sounds = parseXsampa(xsampa);
     const chunks = getChunks(sounds);
     const checkSeq = getChecked(chunks);
     const units = getUnits(chunks, checkSeq);
