@@ -161,7 +161,7 @@ function getFirstUnits(chunk: string[]): string[] {
 function getMiddleUnits(middle: string[][], checkSeq: boolean[]): string[] {
     let outList = [];
     for (let i = 0; i < middle.length; i++) {
-        if (checkSeq[i]) {
+        if (middle[i].length === 2 && checkSeq[i]) {
             outList.push(vowelRules[middle[i][0]]["mid-checked"]);
             outList.push(...middle[i].slice(1).map(consonant => consonantRules[consonant]["long"]));
         } else {
@@ -258,11 +258,10 @@ function spell(xsampa: string) : string {
     return prettyUnits.join("");
 }
 
-console.log(spell("S @ b { N @ r { N"));
-console.log(spell("I N s p e l"));
-console.log(spell("p r I n t"));
-console.log(spell("f i r f U l"));
-console.log(spell("p r @ v a j d"));
-console.log(spell("e s p e r a n t o"));
-console.log(spell("d { { { { N"));
-console.log(spell("D I s S { l m e n o"));
+console.log(spell("S@b{N@r{N"));
+console.log(spell("INspel"));
+console.log(spell("prInt"));
+console.log(spell("firfUl"));
+console.log(spell("pr@vajd"));
+console.log(spell("esperanto"));
+console.log(spell("d{{{{N"));
