@@ -274,10 +274,4 @@ function spell(xsampa: string) : string {
     return prettyUnits.join("");
 }
 
-console.log(spell("S@b{N@r{N"));
-console.log(spell("INspel"));
-console.log(spell("prInt"));
-console.log(spell("firfUl"));
-console.log(spell("pr@vajd"));
-console.log(spell("esperanto"));
-console.log(spell("d{{{{N"));
+console.log(spell(process.argv[2]));
